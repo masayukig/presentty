@@ -1,0 +1,7 @@
+*.egg
+*.egg-info
+*.pyc
+AUTHORS
+build/*
+ChangeLog
+venv/
