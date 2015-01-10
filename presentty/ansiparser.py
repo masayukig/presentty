@@ -57,6 +57,8 @@ class ANSIParser(object):
         self.blink = False
         self.fg = 7
         self.bg = 0
+        self.bg256 = None
+        self.fg256 = None
 
     def moveTo(self, x, y):
         while x>80:
@@ -85,9 +87,8 @@ class ANSIParser(object):
         if c == 'm':
             if not values:
                 values = [0]
-            fg256 = None
             for v in values:
-                if fg256 is True:
+                if self.fg256 is True:
                     if v <= 0x08:
                         self.fg = v
                     elif v <= 0x0f:
@@ -97,12 +98,28 @@ class ANSIParser(object):
                         r, x = divmod(v-16, 36)
                         g, x = divmod(x, 6)
                         b = x % 6
-                        fg256 = ('#' +
-                                 self.colors256[r] +
-                                 self.colors256[g] +
-                                 self.colors256[b])
+                        self.fg256 = ('#' +
+                                      self.colors256[r] +
+                                      self.colors256[g] +
+                                      self.colors256[b])
                     else:
-                        fg256 = 'g' + str(self.colorsgray[v-232])
+                        self.fg256 = 'g' + str(self.colorsgray[v-232])
+                elif self.bg256 is True:
+                    if v <= 0x08:
+                        self.bg = v
+                    #elif v <= 0x0f:
+                    #    self.bg = v - 0x08
+                    #    self.bold = True
+                    elif v <= 0xe7:
+                        r, x = divmod(v-16, 36)
+                        g, x = divmod(x, 6)
+                        b = x % 6
+                        self.bg256 = ('#' +
+                                      self.colors256[r] +
+                                      self.colors256[g] +
+                                      self.colors256[b])
+                    else:
+                        self.bg256 = 'g' + str(self.colorsgray[v-232])
                 elif v == 0:
                     self.resetColor()
                 elif v == 1:
@@ -111,21 +128,29 @@ class ANSIParser(object):
                     self.blink = True
                 elif v>29 and v<38:
                     self.fg = v-30
+                    self.fg256 = None
                 elif v>39 and v<48:
                     self.bg = v-40
+                    self.bg256 = None
                 elif v==38:
-                    fg256=True
+                    self.fg256=True
+                elif v==48:
+                    self.bg256=True
             fg = self.fg
             if self.bold:
                 fg += 8
             fgattrs = []
             if self.blink:
                 fgattrs.append('blink')
-            if fg256:
-                fgattrs.append(fg256)
+            if self.fg256:
+                fgattrs.append(self.fg256)
             else:
                 fgattrs.append(self.colors[fg])
-            self.attr = urwid.AttrSpec(', '.join(fgattrs), self.colors[self.bg])
+            if self.bg256:
+                bg = self.bg256
+            else:
+                bg = self.colors[self.bg]
+            self.attr = urwid.AttrSpec(', '.join(fgattrs), bg)
         if c == 'A':
             if not values:
                 values = [1]

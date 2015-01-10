@@ -460,7 +460,7 @@ def main():
 
     argp = argparse.ArgumentParser(description='Test RST parser')
     argp.add_argument('file', help='presentation file (RST)')
-    argp.add_argument('slides', nargs='?', default=[],
+    argp.add_argument('slides', nargs='*', default=[],
                       help='slides to render')
     argp.add_argument('--render', action='store_true',
                       help='Fully render a slide')
