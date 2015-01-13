@@ -56,6 +56,11 @@ In either the presenter's console or the main presentty window, the
 left and right arrow keys or page-up and page-down navigate between
 slides.
 
+Source
+------
+
+Git repo: https://gitorious.org/presentty
+
 License
 -------
 
