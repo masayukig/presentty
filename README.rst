@@ -8,7 +8,7 @@ Installation
 ------------
 
 It is recommended, but not required, to install presentty in to a
-virtualenv.  To cset one up::
+virtualenv.  To set one up::
 
   virtualenv presentty-env
   source presentty-env/bin/activate
