@@ -172,6 +172,8 @@ class Screen(urwid.WidgetWrap):
             self.console.prev()
         elif key == 't':
             self.console.timerDialog()
+        elif key == 'q':
+            raise urwid.ExitMainLoop()
         else:
             return super(Screen, self).keypress(size, key)
         return None

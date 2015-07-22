@@ -56,6 +56,8 @@ In either the presenter's console or the main presentty window, the
 left and right arrow keys or page-up and page-down navigate between
 slides.
 
+To exit presentty gracefully, use the 'q' key.
+
 Source
 ------
 

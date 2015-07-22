@@ -78,6 +78,8 @@ class Presenter(object):
             self.nextSlide()
         elif key in ('left', 'page up'):
             self.prevSlide()
+        elif key == 'q':
+            raise urwid.ExitMainLoop()
 
     def transitionTo(self, index, forward=True):
         self.pos = index
