@@ -2,11 +2,11 @@
    The following directives, when used at the top of the file, set default
    values for all slides:
 
-   This sets the transition style.  Values are: 'dissolve', 'pan', or
-   'cut'.  The optional argument of 'duration' sets the duration of
-   the transition in seconds (0.4 seconds by default).  The same
-   syntax may be used within a slide to override the transition for
-   that slide alone.
+   This sets the transition style.  Values are: 'dissolve', 'pan',
+   'tilt', or 'cut'.  The optional argument of 'duration' sets the
+   duration of the transition in seconds (0.4 seconds by default).
+   The same syntax may be used within a slide to override thes
+   transition for that slide alone.
 
    .. transition:: dissolve
       :duration: 0.4
@@ -76,6 +76,13 @@ Pan Transition
 
 ...or "pan," where the slides appear horizontally adjacent and move
 right to left...
+
+Tilt Transition
+===============
+.. transition:: tilt
+
+...or "tilt," where the slides appear vertically adjacent and move
+bottom to top...
 
 Cut Transition
 ==============

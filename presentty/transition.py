@@ -46,6 +46,16 @@ class PanTransition(Transition):
         c.pad_trim_left_right(0-offset, 0-(size[0]-offset))
         return c
 
+class TiltTransition(Transition):
+    def render(self, size, focus=False):
+        old = self.old.render((size[0], size[1]))
+        new = self.new.render((size[0], size[1]))
+        c = urwid.CanvasCombine([(old, None, False),
+                              (new, None, False)])
+        offset = int(size[1] * self.progress)
+        c.pad_trim_top_bottom(0-offset, 0-(size[1]-offset))
+        return c
+
 class DissolveTransition(Transition):
     def __init__(self, *args, **kw):
         super(DissolveTransition, self).__init__(*args, **kw)

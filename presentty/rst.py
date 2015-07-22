@@ -65,6 +65,7 @@ class UrwidTranslator(docutils.nodes.GenericNodeVisitor):
     transition_map = {'dissolve': transition_mod.DissolveTransition,
                       'cut': transition_mod.CutTransition,
                       'pan': transition_mod.PanTransition,
+                      'tilt': transition_mod.TiltTransition,
                       }
 
     def __init__(self, document, palette, hinter=None, basedir='.'):
