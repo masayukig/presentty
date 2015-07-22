@@ -18,7 +18,7 @@ import urwid
 class Transition(urwid.Widget):
     def __init__(self, duration=0.4):
         super(Transition, self).__init__()
-        self.duration = 0.4
+        self.duration = duration
         self.old = None
         self.new = None
         self.progress = 0.0
