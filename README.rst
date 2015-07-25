@@ -61,7 +61,14 @@ To exit presentty gracefully, use the 'q' key.
 Source
 ------
 
-Git repo: https://gitorious.org/presentty
+Git repo: http://git.inaugust.com/cgit/presentty/
+
+Contributing
+------------
+
+To send your latest commit as a patch, run::
+
+  git send-email --to corvus@gnu.org --annotate -1
 
 License
 -------
