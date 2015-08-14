@@ -123,6 +123,8 @@ class UrwidTranslator(docutils.nodes.GenericNodeVisitor):
         name = node['name']
         duration = node.get('duration', DEFAULT_TRANSITION_DURATION)
         self.transition = self._make_transition(name, duration)
+        if not self.slide:
+            self.default_transition = self.transition
 
     def depart_transition(self, node):
         pass
