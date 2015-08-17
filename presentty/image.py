@@ -47,7 +47,11 @@ class ANSIImage(urwid.Widget):
     def _loadImage(self):
         image = PIL.Image.open(self.uri)
         image.load()
-        exif = image._getexif()
+        try:
+            exif = image._getexif()
+        except AttributeError:
+            # No info on whether we should rotate image
+            exif = None
         if exif:
             orientation = exif.get(274, 1)
             if orientation == 1:
@@ -58,8 +62,6 @@ class ANSIImage(urwid.Widget):
                 image = image.rotate(-90)
             elif orientation == 8:
                 image = image.rotate(90)
-            else:
-                raise Exception("unknown orientation %s" % orientation)
         return image
 
     def pack(self, size, focus=False):
@@ -105,6 +107,7 @@ class ANSIImage(urwid.Widget):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         image = self._loadImage()
+        image = image.convert('RGBA')
         image.save(jp2a.stdin, 'JPEG')
         jp2a.stdin.close()
         data = jp2a.stdout.read()
