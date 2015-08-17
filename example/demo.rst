@@ -142,6 +142,22 @@ ANSI Art
 
 .. ansi:: ansi.ans
 
+
+Nice filesystem listings
+========================
+
+.. container:: handout
+
+   You can cut and paste the output of tree to make nice filesystem listings.
+
+.. code::
+
+   files
+   ├── hello
+   └── world
+
+0 directories, 2 files
+
 Images
 ======
 .. container:: handout

@@ -152,7 +152,7 @@ def main():
         plt = palette.DARK_PALETTE
     hinter = slide.ScreenHinter()
     parser = rst.PresentationParser(plt, hinter)
-    program = parser.parse(open(args.file).read(), args.file)
+    program = parser.parse(unicode(open(args.file).read(), 'utf-8'), args.file)
     if args.warnings:
         w = parser.warnings.getvalue()
         if w:
