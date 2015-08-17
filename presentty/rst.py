@@ -306,8 +306,10 @@ class UrwidTranslator(docutils.nodes.GenericNodeVisitor):
         if not PIL:
             return
         uri = node['uri']
+        scale = float(node.get('scale', 100))/100.0
         fn = os.path.join(self.basedir, uri)
-        w = image.ANSIImage(fn, self.hinter)
+        w = image.ANSIImage(fn, self.hinter, scale=scale,
+                background=self.palette['_default'].background)
         self._append(node, w, 'pack')
 
     def visit_ansi(self, node):

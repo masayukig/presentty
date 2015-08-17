@@ -32,13 +32,17 @@ def nearest_color(x):
     return 'f'
 
 class ANSIImage(urwid.Widget):
-    def __init__(self, uri, hinter=None):
+    def __init__(self, uri, hinter=None, scale=1, background=None):
         super(ANSIImage, self).__init__()
         self.uri = uri
         image = self._loadImage()
         self.htmlparser = HTMLParser.HTMLParser()
         self.ratio = float(image.size[0])/float(image.size[1])
         self.hinter = hinter
+        if scale > 1:
+            scale = 1
+        self.scale = scale
+        self.background = background or 'black'
 
     def _loadImage(self):
         image = PIL.Image.open(self.uri)
@@ -81,7 +85,18 @@ class ANSIImage(urwid.Widget):
     def render(self, size, focus=False):
         spanre = self.SPAN_RE
         htmlparser = self.htmlparser
-        width, height = self.pack(size, focus)
+
+        # Calculate image size and any bounding box
+        total_width, total_height = self.pack(size, focus)
+        width, height = self.pack([s * self.scale for s in size], focus)
+        width = int(width)
+        height = int(height)
+        top_pad = (total_height - height) // 2
+        bottom_pad = total_height - height - top_pad
+        left_pad = (total_width - width) // 2
+        right_pad = total_width - width - left_pad
+        padding_attr = urwid.AttrSpec(self.background, self.background)
+
         jp2a = subprocess.Popen(['jp2a', '--colors', '--fill',
                                  '--width=%s' % width,
                                  '--height=%s' % height,
@@ -104,10 +119,23 @@ class ANSIImage(urwid.Widget):
         current_fg = None
         current_bg = None
         current_props = None
+
+        # Top pad
+        for padding in range(0, top_pad):
+            line_list.append(' ' * total_width)
+            attr_list.append([(padding_attr, 1)] * total_width)
+
         for line in data.split('<br/>'):
             if not line:
                 continue
+
+            # Left pad
+            line_text += ' ' * left_pad
+            for fake_attr in range(0, left_pad):
+                line_attrs.append((padding_attr, 1))
+
             for span in line.split('</span>'):
+
                 if not span:
                     continue
                 m = spanre.match(span)
@@ -141,10 +169,22 @@ class ANSIImage(urwid.Widget):
             current_attr = [None, 0]
             current_fg = None
             current_bg = None
+
+            # Right pad
+            line_text += ' ' * right_pad
+            for fake_attr in range(0, right_pad):
+                line_attrs.append((padding_attr, 1))
+
             line_list.append(line_text)
             line_text = ''
             attr_list.append(line_attrs)
             line_attrs = []
+
+        # Bottom pad
+        for padding in range(0, bottom_pad):
+            line_list.append(' ' * total_width)
+            attr_list.append([(padding_attr, 1)] * total_width)
+
         canvas = urwid.TextCanvas(line_list, attr_list)
         return canvas
 

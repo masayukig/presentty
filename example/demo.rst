@@ -154,3 +154,15 @@ Images
 .. image:: gg.jpg
 
 "Golden Gate Bridge" by Kevin Cole (CC-BY: https://flic.kr/p/7L2Rdu)
+
+Scaling Images
+==============
+.. container:: handout
+
+   You can also give the image directive a scale parameter to scale the image.
+   the image will be centered within the slide.
+
+.. image:: gg.jpg
+   :scale: 75
+
+"Golden Gate Bridge" by Kevin Cole (CC-BY: https://flic.kr/p/7L2Rdu)
