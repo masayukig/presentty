@@ -32,6 +32,8 @@ Presentty
 Presentty is a console presentation system where slides are
 authored in reStructuredText.
 
+Use the arrow keys to navigate between slides, or ``q`` to quit.
+
 Bullet Lists
 ============
 It is able to display lists of items:
