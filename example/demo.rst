@@ -5,7 +5,7 @@
    This sets the transition style.  Values are: 'dissolve', 'pan',
    'tilt', or 'cut'.  The optional argument of 'duration' sets the
    duration of the transition in seconds (0.4 seconds by default).
-   The same syntax may be used within a slide to override thes
+   The same syntax may be used within a slide to override these
    transition for that slide alone.
 
    .. transition:: dissolve
@@ -29,7 +29,7 @@ Presentty
    displayed with the slides, but will be displayed on the presenter's
    console.
 
-Presentty is a console presentation system based where slides are
+Presentty is a console presentation system where slides are
 authored in reStructuredText.
 
 Bullet Lists
@@ -66,8 +66,8 @@ Table
  F   T
 === ===
 
-Dissove Transition
-==================
+Dissolve Transition
+===================
 Transitions may be "dissolve," where one slide cross-fades into the next...
 
 Pan Transition
