@@ -43,6 +43,9 @@ class ANSIImage(urwid.Widget):
             scale = 1
         self.scale = scale
         self.background = background or 'black'
+        self._prime = True
+        self.render((3,1))
+        self._prime = False
 
     def _loadImage(self):
         image = PIL.Image.open(self.uri)
@@ -83,6 +86,12 @@ class ANSIImage(urwid.Widget):
         r = self.pack(size)
         return r[1]
 
+    def _blank(self, width, height):
+        ret = []
+        for y in range(height):
+            ret.append("<span style='color:#000000; background-color:#000000;'>%s</span>" % ('.'*width))
+        return '<br/>'.join(ret)
+
     SPAN_RE = re.compile(r"<span style='color:#(......); background-color:#(......);'>(.*)")
     def render(self, size, focus=False):
         spanre = self.SPAN_RE
@@ -99,20 +108,30 @@ class ANSIImage(urwid.Widget):
         right_pad = total_width - width - left_pad
         padding_attr = urwid.AttrSpec(self.background, self.background)
 
-        jp2a = subprocess.Popen(['jp2a', '--colors', '--fill',
-                                 '--width=%s' % width,
-                                 '--height=%s' % height,
-                                 '--html-raw', '-'],
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        image = self._loadImage()
-        image = image.convert('RGBA')
-        image.save(jp2a.stdin, 'JPEG')
-        jp2a.stdin.close()
-        data = jp2a.stdout.read()
-        jp2a.stderr.read()
-        jp2a.wait()
+        try:
+            jp2a = subprocess.Popen(['jp2a', '--colors', '--fill',
+                                     '--width=%s' % width,
+                                     '--height=%s' % height,
+                                     '--html-raw', '-'],
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+        except OSError, e:
+            if self._prime:
+                if e.errno == 2:
+                    print("ERROR: jp2a is used but is not installed.")
+                else:
+                    print("ERROR: unable to run jp2a: %s" % e)
+                raw_input("Press ENTER to continue.")
+            data = self._blank(width, height)
+        else:
+            image = self._loadImage()
+            image = image.convert('RGBA')
+            image.save(jp2a.stdin, 'JPEG')
+            jp2a.stdin.close()
+            data = jp2a.stdout.read()
+            jp2a.stderr.read()
+            jp2a.wait()
 
         line_list = []
         attr_list = []
