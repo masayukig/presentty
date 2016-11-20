@@ -29,15 +29,24 @@ class FigletText(urwid.WidgetWrap):
         super(FigletText, self).__init__(widget)
 
     def _run(self):
-        p = subprocess.Popen(['figlet'],
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        p.stdin.write(self.text)
-        p.stdin.close()
-        data = p.stdout.read()
-        p.stderr.read()
-        p.wait()
+        try:
+            p = subprocess.Popen(['figlet'],
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+        except OSError, e:
+            if e.errno == 2:
+                print("ERROR: figlet is used but is not installed.")
+            else:
+                print("ERROR: unable to run figlet: %s" % e)
+            raw_input("Press ENTER to continue.")
+            data = "[Unable to run figlet]"
+        else:
+            p.stdin.write(self.text)
+            p.stdin.close()
+            data = p.stdout.read()
+            p.stderr.read()
+            p.wait()
         return data
 
 class CowsayText(urwid.WidgetWrap):
@@ -52,15 +61,24 @@ class CowsayText(urwid.WidgetWrap):
         super(CowsayText, self).__init__(widget)
 
     def _run(self):
-        p = subprocess.Popen(['cowsay'],
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        p.stdin.write(self.text)
-        p.stdin.close()
-        data = p.stdout.read()
-        p.stderr.read()
-        p.wait()
+        try:
+            p = subprocess.Popen(['cowsay'],
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+        except OSError, e:
+            if e.errno == 2:
+                print("ERROR: cowsay is used but is not installed.")
+            else:
+                print("ERROR: unable to run cowsay: %s" % e)
+            raw_input("Press ENTER to continue.")
+            data = "[Unable to run cowsay]"
+        else:
+            p.stdin.write(self.text)
+            p.stdin.close()
+            data = p.stdout.read()
+            p.stderr.read()
+            p.wait()
         return data
 
 def main():
