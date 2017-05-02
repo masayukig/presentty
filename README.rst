@@ -70,6 +70,13 @@ To send your latest commit as a patch, run::
 
   git send-email --to corvus@gnu.org --annotate -1
 
+Or, if you don't have ``git send-email`` configured, run::
+
+  git format-patch --stdout HEAD~1 > /tmp/presentty.patch
+
+And send `/tmp/presentty.patch` to corvus@gnu.org using your email
+client.
+
 License
 -------
 
