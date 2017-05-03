@@ -472,7 +472,7 @@ def main():
     args = argp.parse_args()
 
     parser = PresentationParser(palette.DARK_PALETTE)
-    document, visitor = parser._parse(open(args.file).read(), args.file)
+    document, visitor = parser._parse(unicode(open(args.file).read(), 'utf-8'), args.file)
 
     slides = args.slides
     if not slides:
