@@ -253,11 +253,19 @@ class UrwidTranslator(docutils.nodes.GenericNodeVisitor):
         pad = slide.SlidePadding(text, width='pack')
         self._append(node, pad, 'pack')
 
+    def visit_line_block(self, node):
+        self.stack.append(slide.SlidePile([]))
+
+    def depart_line_block(self, node):
+        pile = self.stack.pop()
+        pad = slide.SlidePadding(pile, left=2)
+        self._append(node, pad, 'pack')
+
     visit_line = visit_textelement
 
     def depart_line(self, node):
         text = self.stack.pop()
-        self._append(node, urwid.Text(text.getFormattedText(), wrap='clip'),
+        self._append(node, urwid.Text(text.getFlowedText(), wrap='clip'),
                      'pack')
 
     visit_title = visit_textelement

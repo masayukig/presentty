@@ -68,6 +68,25 @@ Table
  F   T
 === ===
 
+Line Blocks
+===========
+|
+| I bring fresh showers for the thirsting flowers,
+|     From the seas and the streams;
+| I bear light shade for the leaves when laid
+|     In their noonday dreams.
+| From my wings are shaken the dews that waken
+|     The sweet buds every one,
+| When rocked to rest on their mother's breast,
+|     As she dances about the sun.
+| I wield the flail of the lashing hail,
+|     And whiten the green plains under,
+| And then again I dissolve it in rain,
+|     And laugh as I pass in thunder.
+|
+
+(From "The Cloud", Percy Bysshe Shelley)
+
 Dissolve Transition
 ===================
 Transitions may be "dissolve," where one slide cross-fades into the next...
