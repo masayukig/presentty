@@ -3,5 +3,5 @@ pbr>=0.5.21,<1.0
 urwid
 docutils>=0.12
 pygments
-Pillow # or PIL.  Optional; only used for images. # MIT
+Pillow>=9.0.0 # or PIL.  Optional; only used for images. # MIT
 
