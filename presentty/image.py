@@ -14,14 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import subprocess
-import HTMLParser
+import html
 import re
 
 import PIL
 import PIL.ExifTags
+import PIL.Image
 import urwid
 
-import slide
+from presentty import slide
 
 def nearest_color(x):
     if x < 0x30: return '0'
@@ -36,7 +37,6 @@ class ANSIImage(urwid.Widget):
         super(ANSIImage, self).__init__()
         self.uri = uri
         image = self._loadImage()
-        self.htmlparser = HTMLParser.HTMLParser()
         self.ratio = float(image.size[0])/float(image.size[1])
         self.hinter = hinter
         if scale > 1:
@@ -95,7 +95,6 @@ class ANSIImage(urwid.Widget):
     SPAN_RE = re.compile(r"<span style='color:#(......); background-color:#(......);'>(.*)")
     def render(self, size, focus=False):
         spanre = self.SPAN_RE
-        htmlparser = self.htmlparser
 
         # Calculate image size and any bounding box
         total_width, total_height = self.pack(size, focus)
@@ -116,26 +115,26 @@ class ANSIImage(urwid.Widget):
                                     stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
-        except OSError, e:
+        except OSError as e:
             if self._prime:
                 if e.errno == 2:
                     print("ERROR: jp2a is used but is not installed.")
                 else:
                     print("ERROR: unable to run jp2a: %s" % e)
-                raw_input("Press ENTER to continue.")
+                input("Press ENTER to continue.")
             data = self._blank(width, height)
         else:
             image = self._loadImage()
-            image = image.convert('RGBA')
+            image = image.convert('RGB')
             image.save(jp2a.stdin, 'JPEG')
             jp2a.stdin.close()
-            data = jp2a.stdout.read()
+            data = jp2a.stdout.read().decode('utf8')
             jp2a.stderr.read()
             jp2a.wait()
 
         line_list = []
         attr_list = []
-        line_text = ''
+        line_text = b''
         line_attrs = []
         current_attr = [None, 0]
         current_fg = None
@@ -144,7 +143,7 @@ class ANSIImage(urwid.Widget):
 
         # Top pad
         for padding in range(0, top_pad):
-            line_list.append(' ' * total_width)
+            line_list.append(b' ' * total_width)
             attr_list.append([(padding_attr, 1)] * total_width)
 
         for line in data.split('<br/>'):
@@ -152,7 +151,7 @@ class ANSIImage(urwid.Widget):
                 continue
 
             # Left pad
-            line_text += ' ' * left_pad
+            line_text += b' ' * left_pad
             for fake_attr in range(0, left_pad):
                 line_attrs.append((padding_attr, 1))
 
@@ -163,7 +162,7 @@ class ANSIImage(urwid.Widget):
                 m = spanre.match(span)
                 fg, bg, char = m.groups()
                 if '&' in char:
-                    char = htmlparser.unescape(char)
+                    char = html.unescape(char)
                 char = char.encode('utf8')
                 line_text += char
                 props = []
@@ -193,18 +192,18 @@ class ANSIImage(urwid.Widget):
             current_bg = None
 
             # Right pad
-            line_text += ' ' * right_pad
+            line_text += b' ' * right_pad
             for fake_attr in range(0, right_pad):
                 line_attrs.append((padding_attr, 1))
 
             line_list.append(line_text)
-            line_text = ''
+            line_text = b''
             attr_list.append(line_attrs)
             line_attrs = []
 
         # Bottom pad
         for padding in range(0, bottom_pad):
-            line_list.append(' ' * total_width)
+            line_list.append(b' ' * total_width)
             attr_list.append([(padding_attr, 1)] * total_width)
 
         canvas = urwid.TextCanvas(line_list, attr_list)
@@ -227,4 +226,4 @@ def main():
     if True:
         with screen.start():
             screen.draw_screen((80,25), fill.render((80,25)))
-            raw_input()
+            input()

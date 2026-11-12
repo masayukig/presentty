@@ -34,17 +34,17 @@ class FigletText(urwid.WidgetWrap):
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
-        except OSError, e:
+        except OSError as e:
             if e.errno == 2:
                 print("ERROR: figlet is used but is not installed.")
             else:
                 print("ERROR: unable to run figlet: %s" % e)
-            raw_input("Press ENTER to continue.")
+            input("Press ENTER to continue.")
             data = "[Unable to run figlet]"
         else:
-            p.stdin.write(self.text)
+            p.stdin.write(self.text.encode('utf8'))
             p.stdin.close()
-            data = p.stdout.read()
+            data = p.stdout.read().decode('utf8')
             p.stderr.read()
             p.wait()
         return data
@@ -66,23 +66,23 @@ class CowsayText(urwid.WidgetWrap):
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
-        except OSError, e:
+        except OSError as e:
             if e.errno == 2:
                 print("ERROR: cowsay is used but is not installed.")
             else:
                 print("ERROR: unable to run cowsay: %s" % e)
-            raw_input("Press ENTER to continue.")
+            input("Press ENTER to continue.")
             data = "[Unable to run cowsay]"
         else:
-            p.stdin.write(self.text)
+            p.stdin.write(self.text.encode('utf8'))
             p.stdin.close()
-            data = p.stdout.read()
+            data = p.stdout.read().decode('utf8')
             p.stderr.read()
             p.wait()
         return data
 
 def main():
-    import slide
+    from presentty import slide
     w = FigletText("Testing")
     slpile = slide.SlidePile([])
     slpile.contents.append((w, slpile.options()))
@@ -94,6 +94,6 @@ def main():
     if True:
         with screen.start():
             screen.draw_screen((80,25), fill.render((80,25)))
-            raw_input()
+            input()
 if __name__=='__main__':
     main()

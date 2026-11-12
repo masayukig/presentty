@@ -20,10 +20,10 @@ import time
 
 import urwid
 
-import slide
-import server
-import rst
-import palette
+from presentty import slide
+from presentty import server
+from presentty import rst
+from presentty import palette
 
 
 class Presenter(object):
@@ -47,24 +47,24 @@ class Presenter(object):
         self.server.start()
 
     def serverData(self, data):
-        parts = data.split()
+        parts = data.decode('utf8').split()
         if parts[0] == 'jump':
             try:
                 index = int(parts[1])
             except Exception:
-                os.write(self.server_pipe_out_write, 'err\n')
+                os.write(self.server_pipe_out_write, b'err\n')
                 return
             if index < 0 or index > len(self.program)-1:
-                os.write(self.server_pipe_out_write, 'err\n')
+                os.write(self.server_pipe_out_write, b'err\n')
                 return
             self.transitionTo(index)
-            os.write(self.server_pipe_out_write, 'ok\n')
+            os.write(self.server_pipe_out_write, b'ok\n')
         elif parts[0] == 'next':
             self.nextSlide()
-            os.write(self.server_pipe_out_write, 'ok\n')
+            os.write(self.server_pipe_out_write, b'ok\n')
         elif parts[0] == 'prev':
             self.prevSlide()
-            os.write(self.server_pipe_out_write, 'ok\n')
+            os.write(self.server_pipe_out_write, b'ok\n')
 
     def setProgram(self, program):
         self.program = program
@@ -152,11 +152,11 @@ def main():
         plt = palette.DARK_PALETTE
     hinter = slide.ScreenHinter()
     parser = rst.PresentationParser(plt, hinter)
-    program = parser.parse(unicode(open(args.file).read(), 'utf-8'), args.file)
+    program = parser.parse(open(args.file, encoding='utf-8').read(), args.file)
     if args.warnings:
         w = parser.warnings.getvalue()
         if w:
-            print w
+            print(w)
             sys.exit(1)
     p = Presenter(plt)
     p.setProgram(program)

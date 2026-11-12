@@ -15,9 +15,9 @@
 
 import os
 import threading
-import SocketServer
+import socketserver
 
-class ConsoleHandler(SocketServer.StreamRequestHandler):
+class ConsoleHandler(socketserver.StreamRequestHandler):
     def handle(self):
         server = self.server.server
         while True:
@@ -27,34 +27,38 @@ class ConsoleHandler(SocketServer.StreamRequestHandler):
                 break
             if not data:
                 break
-            data = data.strip()
+            data = data.decode('utf8').strip()
             if data == 'list':
                 for i, slide in enumerate(server.list()):
-                    self.wfile.write('slide %i %s\n' % (i, slide.title))
-                self.wfile.write('end\n')
+                    self._write('slide %i %s\n' % (i, slide.title))
+                self._write('end\n')
             elif data == 'current':
                 i, slide = server.current()
-                self.wfile.write('current %i %i %s\n' % (
+                self._write('current %i %i %s\n' % (
                     i, slide.progressive_state, slide.title))
             elif data == 'next':
                 i, slide = server.next()
-                self.wfile.write('current %i %i %s\n' % (
+                self._write('current %i %i %s\n' % (
                     i, slide.progressive_state, slide.title))
             elif data == 'prev':
                 i, slide = server.prev()
-                self.wfile.write('current %i %i %s\n' % (
+                self._write('current %i %i %s\n' % (
                     i, slide.progressive_state, slide.title))
             elif data.startswith('jump'):
                 parts = data.split()
                 i, slide = server.jump(int(parts[1].strip()))
-                self.wfile.write('current %i %i %s\n' % (
+                self._write('current %i %i %s\n' % (
                     i, slide.progressive_state, slide.title))
             elif data == 'size':
                 size = server.size()
-                self.wfile.write('size %s %s\n' % size)
+                self._write('size %s %s\n' % size)
 
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    def _write(self, data):
+        self.wfile.write(data.encode('utf8'))
+
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     allow_reuse_address=True
+    daemon_threads=True
 
 class ConsoleServer(object):
     def __init__(self, presenter, host='localhost', port=1292):
@@ -87,7 +91,7 @@ class ConsoleServer(object):
     def next(self):
         self.lock.acquire()
         try:
-            os.write(self.presenter.server_pipe_in, 'next')
+            os.write(self.presenter.server_pipe_in, b'next')
             self.presenter.server_pipe_out_read.readline()
             return self.current()
         finally:
@@ -96,7 +100,7 @@ class ConsoleServer(object):
     def prev(self):
         self.lock.acquire()
         try:
-            os.write(self.presenter.server_pipe_in, 'prev')
+            os.write(self.presenter.server_pipe_in, b'prev')
             self.presenter.server_pipe_out_read.readline()
             return self.current()
         finally:
@@ -105,7 +109,7 @@ class ConsoleServer(object):
     def jump(self, pos):
         self.lock.acquire()
         try:
-            os.write(self.presenter.server_pipe_in, 'jump %s' % (pos,))
+            os.write(self.presenter.server_pipe_in, ('jump %s' % (pos,)).encode('utf8'))
             self.presenter.server_pipe_out_read.readline()
             return self.current()
         finally:

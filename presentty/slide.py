@@ -29,7 +29,7 @@ class SlidePile(urwid.Pile):
 class SlidePadding(urwid.Padding):
     def pack(self, size, focus=False):
         r = self._original_widget.pack(size, focus)
-        width = max(r[0] + self.left + self.right, self.min_width)
+        width = max(r[0] + self.left + self.right, self.min_width or 0)
         width = min(size[0], width)
         return (width, r[1])
 
