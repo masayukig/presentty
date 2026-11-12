@@ -1,4 +1,4 @@
-pbr>=0.5.21,<1.0
+pbr>=5.0.0
 
 urwid
 docutils>=0.12

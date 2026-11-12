@@ -76,7 +76,7 @@ class DissolveTransition(Transition):
         buf = []
         for line in canvas.content():
             for (attr, cs, text) in line:
-                for char in unicode(text, 'utf8'):
+                for char in text.decode('utf8'):
                     buf.append((attr, cs, char))
         return buf
 
@@ -89,7 +89,7 @@ class DissolveTransition(Transition):
             self._cache_size = size
         line_list = []
         attr_list = []
-        line_text = ''
+        line_text = b''
         line_attrs = []
         current_attr = [None, 0]
         current_rgb = None
@@ -148,7 +148,7 @@ class DissolveTransition(Transition):
                 current_attr = [None, 0]
                 current_rgb = None
                 line_list.append(line_text)
-                line_text = ''
+                line_text = b''
                 attr_list.append(line_attrs)
                 line_attrs = []
         canvas = urwid.TextCanvas(line_list, attr_list)

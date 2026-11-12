@@ -20,10 +20,10 @@ import time
 
 import urwid
 
-import palette
-import client
-import slide
-import rst
+from presentty import palette
+from presentty import client
+from presentty import slide
+from presentty import rst
 
 PALETTE = [
     ('reversed', 'standout', ''),
@@ -288,7 +288,7 @@ def main():
         plt = palette.DARK_PALETTE
     hinter = slide.ScreenHinter()
     parser = rst.PresentationParser(plt, hinter)
-    program = parser.parse(open(args.file).read())
+    program = parser.parse(open(args.file, encoding='utf-8').read())
     c = Console(program)
     hinter.setScreen(c.screen)
     c.run()

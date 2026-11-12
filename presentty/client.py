@@ -25,10 +25,14 @@ class Client(object):
     def connect(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.host, self.port))
-        self.file = self.sock.makefile('rw', 0)
+        self.file = self.sock.makefile('rw', encoding='utf8')
+
+    def _send(self, data):
+        self.file.write(data)
+        self.file.flush()
 
     def list(self):
-        self.file.write('list\n')
+        self._send('list\n')
         program = []
         while True:
             ln = self.file.readline().strip()
@@ -39,7 +43,7 @@ class Client(object):
         return program
 
     def size(self):
-        self.file.write('size\n')
+        self._send('size\n')
         ln = self.file.readline().strip()
         x, cols, rows = ln.split(' ', 2)
         return (int(cols), int(rows))
@@ -50,17 +54,17 @@ class Client(object):
         return (int(index), int(progressive_state))
 
     def current(self):
-        self.file.write('current\n')
+        self._send('current\n')
         return self.parseCurrent()
 
     def jump(self, index):
-        self.file.write('jump %i\n' % index)
+        self._send('jump %i\n' % index)
         return self.parseCurrent()
 
     def next(self):
-        self.file.write('next\n')
+        self._send('next\n')
         return self.parseCurrent()
 
     def prev(self):
-        self.file.write('prev\n')
+        self._send('prev\n')
         return self.parseCurrent()

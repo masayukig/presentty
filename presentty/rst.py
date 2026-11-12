@@ -19,15 +19,16 @@ import docutils
 import docutils.frontend
 import docutils.parsers.rst
 import docutils.nodes
-import cStringIO as StringIO
+import docutils.utils
+import io
 
 import urwid
 
-import slide
-import transition as transition_mod
-import image
-import ansiparser
-import text
+from presentty import slide
+from presentty import transition as transition_mod
+from presentty import image
+from presentty import ansiparser
+from presentty import text
 
 try:
     import PIL
@@ -48,7 +49,7 @@ class TextAccumulator(object):
     def getFormattedText(self):
         return self.text
 
-    wsre = re.compile('\s+')
+    wsre = re.compile(r'\s+')
 
     def getFlowedText(self):
         ret = []
@@ -327,7 +328,8 @@ class UrwidTranslator(docutils.nodes.GenericNodeVisitor):
         for name in node['names']:
             p = ansiparser.ANSIParser()
             fn = os.path.join(self.basedir, name)
-            data = unicode(open(fn).read(), 'utf8')
+            with open(fn, encoding='utf8', newline='') as f:
+                data = f.read()
             text = p.parse(data)
             animation.addFrame(text)
         self.slide.animations.append(animation)
@@ -447,10 +449,10 @@ class PresentationParser(object):
             'cowsay', CowsayDirective)
         docutils.parsers.rst.directives.register_directive(
             'hidetitle', HideTitleDirective)
-        self.warnings = StringIO.StringIO()
-        self.settings = docutils.frontend.OptionParser(
-            components=(docutils.parsers.rst.Parser,),
-            defaults=dict(warning_stream=self.warnings)).get_default_values()
+        self.warnings = io.StringIO()
+        self.settings = docutils.frontend.get_default_settings(
+            docutils.parsers.rst.Parser)
+        self.settings.warning_stream = self.warnings
         self.parser = docutils.parsers.rst.Parser()
         self.palette = palette
         self.hinter = hinter
@@ -469,7 +471,7 @@ class PresentationParser(object):
 
 def main():
     import argparse
-    import palette
+    from presentty import palette
 
     argp = argparse.ArgumentParser(description='Test RST parser')
     argp.add_argument('file', help='presentation file (RST)')
@@ -480,7 +482,7 @@ def main():
     args = argp.parse_args()
 
     parser = PresentationParser(palette.DARK_PALETTE)
-    document, visitor = parser._parse(unicode(open(args.file).read(), 'utf-8'), args.file)
+    document, visitor = parser._parse(open(args.file, encoding='utf-8').read(), args.file)
 
     slides = args.slides
     if not slides:
@@ -488,19 +490,19 @@ def main():
     slides = [int(x) for x in slides]
 
     if not args.render:
-        print document.pformat()
+        print(document.pformat())
         for i in slides:
-            print '-'*80
+            print('-'*80)
             s = visitor.program[i]
             for line in s.render((80,25)).text:
-                print line
+                print(line.decode('utf8'))
     else:
         screen = urwid.raw_display.Screen()
         with screen.start():
             for i in slides:
                 s = visitor.program[i]
                 screen.draw_screen((80,25), s.render((80,25)))
-                raw_input()
+                input()
 
 if __name__ == '__main__':
     main()
